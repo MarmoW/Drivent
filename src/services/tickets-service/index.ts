@@ -1,6 +1,6 @@
 import { TicketType } from '@prisma/client';
 import { notFoundError } from '@/errors';
-import ticketRepository from '@/repositories/ticket-repositoty';
+import ticketRepository from '@/repositories/ticket-repository';
 import enrollmentRepository from '@/repositories/enrollment-repository';
 
 
