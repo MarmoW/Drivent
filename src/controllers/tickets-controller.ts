@@ -8,7 +8,7 @@ export async function getTicketType(_req: Request, res: Response, next: NextFunc
     const type = await ticketsService.getTicketTypes();
     return res.status(httpStatus.OK).send(type);
   } catch (err) {
-    next(err);
+    return res.status(httpStatus.NOT_FOUND).send({});
   }
 }
 
@@ -19,7 +19,7 @@ export async function getTicket(req: AuthenticatedRequest, res:Response, next: N
         const type = await ticketsService.getTickets(req.userId);
         res.status(httpStatus.OK).send(type);
     }catch(err){
-        next(err);
+      return res.status(httpStatus.NOT_FOUND).send({});
     }
 }
 
@@ -29,6 +29,6 @@ export async function postTicket(req: AuthenticatedRequest, res: Response, next:
         const type = await ticketsService.postTickets(req.userId, req.body.ticketTypeId);
         res.status(httpStatus.OK).send(type);
     }catch(err){
-        next(err);
+      return res.status(httpStatus.NOT_FOUND).send({});
     }
 }
