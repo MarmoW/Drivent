@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from '@/middlewares';
 import paymentsService from '@/services/payments-service';
 import { CardInfo } from '@/protocols';
 
-export async function getPayment(req: AuthenticatedRequest, res: Response) {
+export async function getPayment(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const { ticketId } = req.query as { ticketId: string };
   try {
     const payment = await paymentsService.getPayments(req.userId, parseInt(ticketId));
@@ -12,14 +12,11 @@ export async function getPayment(req: AuthenticatedRequest, res: Response) {
     res.status(httpStatus.OK).send(payment);
  
 } catch (err) {
-    if (err.name == 'UnauthorizedError') return res.status(httpStatus.UNAUTHORIZED).send(err.message);
-    if (err.name == 'NotFoundError') return res.status(httpStatus.NOT_FOUND).send(err.message);    
-
-    return res.status(httpStatus.BAD_REQUEST).send(err.message);
+    next(err);
   }
 }
 
-export async function postPayment(req: AuthenticatedRequest, res: Response) {
+export async function postPayment(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const { ticketId } = req.body as { ticketId: number };
   const { cardData } = req.body as { cardData: CardInfo };
   const { userId } = req;
@@ -29,8 +26,6 @@ export async function postPayment(req: AuthenticatedRequest, res: Response) {
     res.status(httpStatus.OK).send(payment);
 
   } catch (err) {
-    if (err.name == 'UnauthorizedError') return res.status(httpStatus.UNAUTHORIZED).send(err.message);
-    if (err.name == 'NotFoundError') return res.status(httpStatus.NOT_FOUND).send(err.message);
-    return res.status(httpStatus.BAD_REQUEST).send(err.message);
+    next(err);
   }
 }
