@@ -9,8 +9,11 @@ export async function getPayment(req: AuthenticatedRequest, res: Response, next:
   try {
     const types = await paymentsService.getPayments(req.userId, parseInt(ticketId));
     res.status(httpStatus.OK).send(types);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    if (err.name == 'UnauthorizedError') return res.status(httpStatus.UNAUTHORIZED).send(err.message);
+    if (err.name == 'NotFoundError') return res.status(httpStatus.NOT_FOUND).send(err.message);    
+
+    return res.status(httpStatus.BAD_REQUEST).send(err.message);
   }
 }
 
@@ -22,7 +25,9 @@ export async function postPayment(req: AuthenticatedRequest, res: Response, next
   try {
     const types = await paymentsService.postPayments(ticketId, cardData, userId);
     res.status(httpStatus.OK).send(types);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    if (err.name == 'UnauthorizedError') return res.status(httpStatus.UNAUTHORIZED).send(err.message);
+    if (err.name == 'NotFoundError') return res.status(httpStatus.NOT_FOUND).send(err.message);
+    return res.status(httpStatus.BAD_REQUEST).send(err.message);
   }
 }
