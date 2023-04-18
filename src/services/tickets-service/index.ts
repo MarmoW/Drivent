@@ -6,7 +6,7 @@ import enrollmentRepository from '@/repositories/enrollment-repository';
 
 async function getTicketTypes(): Promise<TicketType[]> {
   const types = await ticketRepository.getTicketTypes();
-  if (!types) throw unauthorizedError();
+  if (!types) throw notFoundError();
 
   return types;
 }
@@ -14,12 +14,12 @@ async function getTicketTypes(): Promise<TicketType[]> {
 async function getTickets(userId: number) {
     const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
     if (!enrollment) {
-      throw unauthorizedError();
+      throw notFoundError();
     }
     const types = await ticketRepository.getTicket(enrollment.id);
   
     if (!types) {
-      throw unauthorizedError();
+      throw notFoundError();
     }
   
     return types;
@@ -28,12 +28,12 @@ async function getTickets(userId: number) {
   export async function postTickets(userId: number, ticketId: number) {
     const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
     if (!enrollment) {
-      throw unauthorizedError();
+      throw notFoundError();
     }
     const types = await ticketRepository.postTicket(enrollment.id, ticketId);
 
     if (!types) {
-      throw unauthorizedError();
+      throw notFoundError();
     }
   
     return types;

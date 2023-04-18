@@ -27,7 +27,7 @@ export async function getTicket(req: AuthenticatedRequest, res:Response, next: N
 export async function postTicket(req: AuthenticatedRequest, res: Response, next: NextFunction){
     try{
         const tickets = await ticketsService.postTickets(req.userId, req.body.ticketTypeId);
-        res.status(httpStatus.OK).send(tickets);
+        res.status(httpStatus.CREATED).send(tickets);
     }catch(err){
       next(err);
     }
