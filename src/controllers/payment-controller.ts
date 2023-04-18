@@ -2,7 +2,7 @@ import { NextFunction, Response } from 'express';
 import httpStatus from 'http-status';
 import { AuthenticatedRequest } from '@/middlewares';
 import paymentsService from '@/services/payments-service';
-import { CardData } from '@/protocols';
+import { CardInfo } from '@/protocols';
 
 export async function getPayment(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const { ticketId } = req.query as { ticketId: string };
@@ -16,7 +16,7 @@ export async function getPayment(req: AuthenticatedRequest, res: Response, next:
 
 export async function postPayment(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const { ticketId } = req.body as { ticketId: number };
-  const { cardData } = req.body as { cardData: CardData };
+  const { cardData } = req.body as { cardData: CardInfo };
   const { userId } = req;
 
   try {
