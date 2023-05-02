@@ -10,8 +10,8 @@ async function getBookings(userId: number){
     if(!gbookings) throw notFoundError();
     const findRoom = await bookingRepository.findRoomById(gbookings.roomId);
     return {
-        id: gbookings.id,
-        room: findRoom
+        Room: findRoom,
+        id: gbookings.id
     }
 }
 
@@ -26,12 +26,16 @@ async function verifyRoomCapacity(roomId: number){
 
 
 async function createBookings(userId: number, roomId: number){
+    const vrooms = await bookingRepository.findRoomById(roomId);
+    if(!vrooms) throw notFoundError();
     const enrollments = await enrollmentRepository.findWithAddressByUserId(userId);
     if(!enrollments) throw forbiddenError();
     const tickets = await ticketsRepository.findTicketByEnrollmentId(enrollments.id);
     if (!tickets || tickets.TicketType.isRemote || tickets.TicketType.includesHotel || tickets.status == 'RESERVED') throw forbiddenError();
     await verifyRoomCapacity(roomId);
+
     const cbookings = await bookingRepository.createBooking(userId, roomId);
+
     return {
         bookingId: cbookings.id
     };
@@ -41,8 +45,13 @@ async function updateBookings(userId: number, roomId: number){
     const findbookings = await bookingRepository.findUserBooking(userId);
     if(!findbookings) throw notFoundError();
     const findrooms = await bookingRepository.findRoomById(roomId);
+    const roomBookings = await bookingRepository.findRoomBooking(roomId);
     if(!findrooms) throw notFoundError();
+
     if(findrooms.capacity == 0) throw forbiddenError();
+    
+    if(roomBookings.length >= findrooms.capacity) throw forbiddenError();
+
     await bookingRepository.updateBooking(findbookings.id, roomId);
     return {
         bookingId: findbookings.id

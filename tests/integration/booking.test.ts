@@ -22,12 +22,12 @@ import {
 } from '../factories';
 
 beforeAll(async () => {
-    await init();
-  });
+  await init();
+});
 
 beforeEach(async () => {
-    await cleanDb();
-  });
+  await cleanDb();
+});
 
 const server = supertest(app);
 
@@ -80,7 +80,7 @@ describe('GET /booking', () => {
         const resp = await server.get('/booking').set('Authorization', `Bearer ${token}`);
   
         expect(resp.status).toBe(httpStatus.OK);
-        expect(resp.body).toEqual([
+        expect(resp.body).toEqual(
           {
             id: booking.id,
             Room:{
@@ -92,7 +92,7 @@ describe('GET /booking', () => {
                 updatedAt: expect.any(String)
             }
           },
-        ]);
+        );
       });
     });
   });

@@ -8,7 +8,9 @@ export async function postBooking(req: AuthenticatedRequest, res: Response, next
     const {userId} = req;
     try{
         const pbooking = await bookingService.createBookings(userId, roomId);
-        return  res.status(httpStatus.OK).send(pbooking);
+        
+        return  res.status(httpStatus.CREATED).send(pbooking);
+
     }catch(err){
         next(err);
     }
