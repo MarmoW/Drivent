@@ -20,7 +20,8 @@ async function verifyRoomCapacity(roomId: number){
     if(!vrooms) throw notFoundError();
     if(vrooms.capacity == 0) throw forbiddenError();
     const roomBookings = await bookingRepository.findRoomBooking(roomId);
-    if(roomBookings.length >= vrooms.capacity) throw forbiddenError();
+    if(!roomBookings) throw notFoundError();
+    if(roomBookings.length >= vrooms.capacity) throw forbiddenError(); 
 }
 
 

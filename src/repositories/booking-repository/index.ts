@@ -13,18 +13,18 @@ async function findUserBooking(userId: number) {
 async function findRoomById(roomId: number){
     return prisma.room.findFirst(
         {
-            roomId: {
-                roomId
+            where: {
+                id: roomId
             }
         }
     )
 };
 
 async function findRoomBooking(roomId: number){
-    return prisma.booking.findFirst(
+    return prisma.booking.findMany(
         {
-            roomId:{
-                roomId
+            where:{
+                roomId: roomId
             }
         }
     )
