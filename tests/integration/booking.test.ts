@@ -273,16 +273,19 @@ describe('GET /booking', () => {
             const newRoom = await createRoomWithHotelId(newHotel.id);
             const secondNewRoom = await createRoomWithHotelId(newHotel.id);
 
-            const booking = await createBooking(user.id, newRoom.id);
+            const extraUser1 = await createUser();
+            const extraUser2 = await createUser();
+            const extraUser3 = await createUser();
+            const extraBooking1 = await createBooking(extraUser1.id, newRoom.id);
+            const extraBooking2 = await createBooking(extraUser2.id, newRoom.id);
+            const extraBooking3 = await createBooking(extraUser3.id, newRoom.id);
 
-            const extrauser1 = await createUser();
-            const extrauser2 = await createUser();
-            const extrauser3 = await createUser();
-            const extrabooking1 = await createBooking(extrauser1.id, newRoom.id);
-            const extrabooking2 = await createBooking(extrauser2.id, newRoom.id);
-            const extrabooking3 = await createBooking(extrauser3.id, newRoom.id);
+            const booking = await createBooking(user.id, newRoom.id);
       
-            const resp = await server.put(`/booking/${booking.id}`).set('Authorization', `Bearer ${token}`).send({ roomId: secondNewRoom.id });
+            const resp = await server
+                .put(`/booking/${booking.id}`)
+                .set('Authorization', `Bearer ${token}`)
+                .send({ roomId: secondNewRoom.id });
       
             expect(resp.status).toEqual(httpStatus.FORBIDDEN);
       });

@@ -4,7 +4,6 @@ import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketsRepository from "@/repositories/tickets-repository";
 import ticketService from "../tickets-service";
 
-
 async function getBookings(userId: number){
     const gbookings = await bookingRepository.findUserBooking(userId);
     if(!gbookings) throw notFoundError();
@@ -16,23 +15,27 @@ async function getBookings(userId: number){
 }
 
 async function verifyRoomCapacity(roomId: number){
-    const vrooms = await bookingRepository.findRoomById(roomId);
-    if(!vrooms) throw notFoundError();
-    if(vrooms.capacity == 0) throw forbiddenError();
+    const room = await bookingRepository.findRoomById(roomId);
+
+    if(!room) throw notFoundError();
+    if(room.capacity == 0) throw notFoundError();
+
     const roomBookings = await bookingRepository.findRoomBooking(roomId);
-    if(!roomBookings) throw notFoundError();
-    if(roomBookings.length >= vrooms.capacity) throw forbiddenError(); 
+
+    if(roomBookings.length >= room.capacity) throw forbiddenError(); 
+    
 }
 
 
 async function createBookings(userId: number, roomId: number){
-    const vrooms = await bookingRepository.findRoomById(roomId);
-    if(!vrooms) throw notFoundError();
+
+    await verifyRoomCapacity(roomId);
+
     const enrollments = await enrollmentRepository.findWithAddressByUserId(userId);
     if(!enrollments) throw forbiddenError();
+
     const tickets = await ticketsRepository.findTicketByEnrollmentId(enrollments.id);
     if (!tickets || tickets.TicketType.isRemote || tickets.TicketType.includesHotel || tickets.status == 'RESERVED') throw forbiddenError();
-    await verifyRoomCapacity(roomId);
 
     const cbookings = await bookingRepository.createBooking(userId, roomId);
 
@@ -42,17 +45,14 @@ async function createBookings(userId: number, roomId: number){
 }
 
 async function updateBookings(userId: number, roomId: number){
+
     const findbookings = await bookingRepository.findUserBooking(userId);
     if(!findbookings) throw notFoundError();
-    const findrooms = await bookingRepository.findRoomById(roomId);
-    const roomBookings = await bookingRepository.findRoomBooking(roomId);
-    if(!findrooms) throw notFoundError();
-
-    if(findrooms.capacity == 0) throw forbiddenError();
     
-    if(roomBookings.length >= findrooms.capacity) throw forbiddenError();
-
+    await verifyRoomCapacity(roomId);    
+    
     await bookingRepository.updateBooking(findbookings.id, roomId);
+
     return {
         bookingId: findbookings.id
     };
